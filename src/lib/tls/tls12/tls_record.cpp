@@ -20,6 +20,10 @@
 #include <botan/internal/tls_seq_numbers.h>
 #include <botan/internal/tls_session_key.h>
 
+#include <iostream>
+#include <fstream>
+#include <format>
+
 #if defined(BOTAN_HAS_TLS_CBC)
    #include <botan/internal/tls_cbc.h>
 #endif
@@ -45,6 +49,20 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
 
    const secure_vector<uint8_t>& aead_key = keys.aead_key(side);
    m_nonce = keys.nonce(side);
+
+   std::cout << "botan_bla_bla_test\n";
+
+   std::cout << "Connection_Cipher_State::aead_key: {";
+   for (auto element : aead_key) {
+      std::cout << std::format("{:#04x}", static_cast<int>(element)) << " ";
+   }
+   std::cout << "}\n";
+
+   std::cout << "Connection_Cipher_State::nonce: {";
+   for (auto element : m_nonce) {
+      std::cout << std::format("{:#04x}", static_cast<int>(element)) << " ";
+   }
+   std::cout << "}\n";
    // NOLINTEND(*-prefer-member-initializer)
 
    BOTAN_ASSERT_NOMSG(m_nonce.size() == m_nonce_bytes_from_handshake);
@@ -93,6 +111,30 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
    }
 
    m_aead->set_key(aead_key);
+
+   if (side == Connection_Side::Server) {
+      std::fstream stream("client.data", std::ios::out);
+
+      for (auto element : aead_key) {
+         stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
+      }
+
+      for (auto element : m_nonce) {
+         stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
+      }
+   }
+
+   if (side == Connection_Side::Client) {
+      std::fstream stream("server.data", std::ios::out);
+
+      for (auto element : aead_key) {
+         stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
+      }
+
+      for (auto element : m_nonce) {
+         stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
+      }
+   }
 }
 
 std::vector<uint8_t> Connection_Cipher_State::aead_nonce(uint64_t seq, RandomNumberGenerator& rng) {
