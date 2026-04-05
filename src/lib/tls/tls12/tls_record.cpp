@@ -119,6 +119,8 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
          stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
       }
 
+      stream << "\n";
+
       for (auto element : m_nonce) {
          stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
       }
@@ -130,6 +132,8 @@ Connection_Cipher_State::Connection_Cipher_State(Protocol_Version version,
       for (auto element : aead_key) {
          stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
       }
+
+      stream << "\n";
 
       for (auto element : m_nonce) {
          stream << std::format("{:#04x}", static_cast<int>(element)) << " ";
